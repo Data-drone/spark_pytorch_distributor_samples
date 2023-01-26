@@ -1,1 +1,2 @@
-# spark_pytorch_distributor_samples
+# A collection of Sample Notebooks on Leveraging the Spark PyTorch Distributor
+
