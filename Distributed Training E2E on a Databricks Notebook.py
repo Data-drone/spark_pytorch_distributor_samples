@@ -267,7 +267,7 @@ def main_fn(directory):
   
   ############################
   ##### Setting up MLflow ####
-  # We need to do this so that different processes that will 
+  # We need to do this so that different processes that will be able to find mlflow
   os.environ['DATABRICKS_HOST'] = db_host
   os.environ['DATABRICKS_TOKEN'] = db_token
 
