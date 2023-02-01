@@ -1,6 +1,6 @@
 # Databricks notebook source
 # DBTITLE 1,Note that there is an issue with mlflow-skinny that will require waiting on PyTorch Lightning 1.9.1
-#%pip install mlflow
+# MAGIC %pip install mlflow
 
 # COMMAND ----------
 
@@ -166,7 +166,10 @@ def main_training_loop(num_tasks, num_proc_per_task):
   # We need to do this so that different processes that will be able to find mlflow
   os.environ['DATABRICKS_HOST'] = db_host
   os.environ['DATABRICKS_TOKEN'] = db_token
-
+  
+  # NCCL P2P can cause issues with incorrect peer settings
+  ## Turn this off to scale for now
+  os.environ['NCCL_P2P_DISABLE'] = '1'
   
   epochs = 14
   batch_size = 32
@@ -195,18 +198,9 @@ def main_training_loop(num_tasks, num_proc_per_task):
   
   trainer.test(model=autoencoder, datamodule=datamodule)
   
-  
-  
   return autoencoder, trainer.checkpoint_callback.best_model_path
   
   
-
-# COMMAND ----------
-
-# MAGIC %sh
-# MAGIC 
-# MAGIC git config --global user.name "Data-drone"
-# MAGIC git config --global user.email "bpl.law@gmail.com"
 
 # COMMAND ----------
 
@@ -256,6 +250,10 @@ NUM_PROC_PER_TASK = 1
 NUM_PROC = NUM_TASKS * NUM_PROC_PER_TASK
 
 ## temp
-NUM_PROC = 2
+NUM_PROC = NUM_PROC
 
 (model, ckpt_path) = TorchDistributor(num_processes=NUM_PROC, local_mode=False, use_gpu=True).run(main_training_loop, NUM_TASKS, NUM_PROC_PER_TASK)
+
+# COMMAND ----------
+
+
