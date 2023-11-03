@@ -36,7 +36,8 @@ username
 experiment_path = f'/Users/{username}/pytorch-distributor'
 
 # We will need these later
-db_host = "https://e2-demo-tokyo.cloud.databricks.com/"  # CHANGE THIS!
+browser_host = dbutils.notebook.entry_point.getDbutils().notebook().getContext().browserHostName().get()
+db_host = f"https://{browser_host}"
 db_token = dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
 
 # We manually create the experiment so that we know the id and can send that to the worker nodes when we scale
@@ -370,7 +371,7 @@ with mlflow.start_run():
 single_node_multi_gpu_dir = create_log_dir()
 print("Data is located at: ", single_node_multi_gpu_dir)
 
-from spark_pytorch_distributor.distributor import TorchDistributor
+from pyspark.ml.torch.distributor import TorchDistributor
 
 output = TorchDistributor(num_processes=2, local_mode=True, use_gpu=True).run(main_fn, single_node_multi_gpu_dir)
   #test(single_node_multi_gpu_dir)
